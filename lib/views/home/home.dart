@@ -129,9 +129,9 @@ class _HomeBodyState extends State<HomeBody> {
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 9),
                   child: Text(
                     '警报时间:' +
-                        DateFormat.yMd()
-                            .add_jm()
-                            .format(DateTime.parse(userList[index].createdAt)),
+                        DateFormat.yMd().add_jms().format(
+                            DateTime.parse(userList[index].createdAt)
+                                .toLocal()),
                     style: TextStyle(fontSize: 14, color: Colors.red),
                   ),
                 ),
