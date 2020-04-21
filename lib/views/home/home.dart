@@ -22,7 +22,7 @@ void printHello() {
 //获得首页的数据
 void _getDataForAlarm() {
   HttpRequest.request(APP_STATUS == 1
-          ? 'http://47.97.251.68:3000/call//call/adminActiveCall'
+          ? 'http://47.97.251.68:3000/call/adminActiveCall'
           : 'http://47.97.251.68:3000/call/activeCall')
       .then((res) {
     print(res.data);
@@ -249,7 +249,7 @@ class _HomeBodyState extends State<HomeBody> {
   //获得首页的数据
   void _getData() {
     HttpRequest.request(APP_STATUS == 1
-            ? 'http://47.97.251.68:3000/call//call/adminActiveCall'
+            ? 'http://47.97.251.68:3000/call/adminActiveCall'
             : 'http://47.97.251.68:3000/call/activeCall')
         .then((res) {
       print(res.data);

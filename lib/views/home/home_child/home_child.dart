@@ -26,8 +26,8 @@ class HomeListItem extends StatelessWidget {
               child: Text(
                 '警报时间:' +
                     DateFormat.yMd()
-                        .add_jm()
-                        .format(DateTime.parse(item.createdAt)),
+                        .add_jms()
+                        .format(DateTime.parse(item.createdAt).toLocal()),
                 style: TextStyle(fontSize: 14, color: Colors.red),
               ),
             ),
