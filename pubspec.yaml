@@ -28,7 +28,7 @@ dependencies:
   wakelock: ^0.1.4+1
   audioplayers: ^0.14.0
   android_alarm_manager: ^0.4.5+8
-  # foreground_service: ^2.0.0
+  foreground_service: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -2,7 +2,9 @@ import 'dart:isolate';
 
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:foreground_service/foreground_service.dart';
 import 'package:waring_demo/config/app_status.dart';
 import 'package:waring_demo/models/home_model.dart';
 import 'package:waring_demo/network/http_request.dart';
@@ -25,6 +27,8 @@ void _getDataForAlarm() {
           ? 'http://47.97.251.68:3000/call/adminActiveCall'
           : 'http://47.97.251.68:3000/call/activeCall')
       .then((res) {
+    // _playaudio();
+
     print(res.data);
     List<HomeModel> users = [];
     for (var user in res.data) {
@@ -37,7 +41,7 @@ void _getDataForAlarm() {
   });
 }
 
-void _playaudio() {
+Future<void> _playaudio() async {
   if (APP_STATUS == 2) {
     // 00:00 - 07:30
     // 11:00 - 13:00
@@ -63,8 +67,11 @@ void _playaudio() {
     }
   }
   final AudioCache player = AudioCache();
+
   for (var i = 0; i < 3; i++) {
-    player.play('messenger.mp3');
+    await Future.delayed(Duration(seconds: 2));
+    await player.play('messenger.mp3',
+        isNotification: true, stayAwake: true, mode: PlayerMode.LOW_LATENCY);
   }
 }
 
@@ -284,7 +291,7 @@ class _HomeBodyState extends State<HomeBody> {
 
   void _startTimer() {
     /*创建循环*/
-    _timer = new Timer.periodic(new Duration(seconds: 5), (timer) {
+    _timer = new Timer.periodic(new Duration(seconds: 10), (timer) {
       setState(() {
         this._getData();
       });
@@ -295,7 +302,8 @@ class _HomeBodyState extends State<HomeBody> {
     final int helloAlarmID = 0;
     await AndroidAlarmManager.initialize();
     await AndroidAlarmManager.periodic(
-        const Duration(seconds: 10), helloAlarmID, printHello);
+        const Duration(seconds: 10), helloAlarmID, printHello,
+        wakeup: true, rescheduleOnReboot: true, exact: true);
 
     /*创建循环*/
     // _timer = new Timer.periodic(new Duration(seconds: 5), (timer) {

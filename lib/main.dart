@@ -1,10 +1,126 @@
+import 'dart:async';
+import 'dart:isolate';
+
+import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/material.dart';
+import 'package:foreground_service/foreground_service.dart';
+import 'package:waring_demo/models/home_model.dart';
+import 'package:waring_demo/network/http_request.dart';
 import 'package:waring_demo/views/history/history.dart';
 import 'package:waring_demo/views/home/home.dart';
 import 'package:wakelock/wakelock.dart';
 
+import 'config/app_status.dart';
+
+void _getDataForAlarm() {
+  print('_getDataForAlarm from frogroudservice: ' + DateTime.now().toString());
+
+  HttpRequest.request(APP_STATUS == 1
+          ? 'http://47.97.251.68:3000/call/adminActiveCall'
+          : 'http://47.97.251.68:3000/call/activeCall')
+      .then((res) {
+    print(res.data);
+    List<HomeModel> users = [];
+    for (var user in res.data) {
+      users.add(HomeModel.fromJson(user));
+    }
+
+    if (users.length > 0) {
+      _playaudio();
+    }
+  });
+}
+
+Future<void> _playaudio() async {
+  if (APP_STATUS == 2) {
+    // 00:00 - 07:30
+    // 11:00 - 13:00
+    // 16:30 - 23:59
+    DateTime now = DateTime.now();
+    int hour = now.hour;
+    int minute = now.minute;
+
+    if (hour == 7 && minute > 30) {
+      return;
+    }
+
+    if (hour >= 8 && hour < 11) {
+      return;
+    }
+
+    if (hour >= 13 && hour < 16) {
+      return;
+    }
+
+    if (hour == 16 && minute < 30) {
+      return;
+    }
+  }
+  final AudioCache player = AudioCache();
+
+  player.play('messenger.mp3');
+
+  if (await ForegroundService.isBackgroundIsolateSetupComplete()) {
+    await ForegroundService.sendToPort("message from main");
+  } else {
+    debugPrint("bg isolate setup not yet complete");
+  }
+}
+
+void _startTimer() {
+  /*创建循环*/
+  Timer _timer = new Timer.periodic(new Duration(seconds: 10), (timer) {
+    _getDataForAlarm();
+  });
+}
+
 void main() {
   runApp(MyApp());
+  // maybeStartFGS();
+}
+
+void maybeStartFGS() async {
+  ///if the app was killed+relaunched, this function will be executed again
+  ///but if the foreground service stayed alive,
+  ///this does not need to be re-done
+  if (!(await ForegroundService.foregroundServiceIsStarted())) {
+    await ForegroundService.setServiceIntervalSeconds(5);
+
+    //necessity of editMode is dubious (see function comments)
+    await ForegroundService.notification.startEditMode();
+
+    await ForegroundService.notification
+        .setTitle("Example Title: ${DateTime.now()}");
+    await ForegroundService.notification
+        .setText("Example Text: ${DateTime.now()}");
+
+    await ForegroundService.notification.finishEditMode();
+
+    await ForegroundService.startForegroundService(foregroundServiceFunction);
+    await ForegroundService.getWakeLock();
+  }
+
+  ///this exists solely in the main app/isolate,
+  ///so needs to be redone after every app kill+relaunch
+  await ForegroundService.setupIsolateCommunication((data) {
+    debugPrint("main received: $data");
+  });
+}
+
+void foregroundServiceFunction() {
+  debugPrint("The current time is: ${DateTime.now()}");
+  ForegroundService.notification.setText("The time was: ${DateTime.now()}");
+
+  if (!ForegroundService.isIsolateCommunicationSetup) {
+    ForegroundService.setupIsolateCommunication((data) {
+      debugPrint("bg isolate received: $data");
+    });
+  }
+
+  ForegroundService.sendToPort("message from bg isolate");
+
+  _startTimer();
+  // _getDataForAlarm();
 }
 
 class MyApp extends StatelessWidget {
