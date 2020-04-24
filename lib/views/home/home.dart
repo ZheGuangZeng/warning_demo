@@ -291,7 +291,7 @@ class _HomeBodyState extends State<HomeBody> {
 
   void _startTimer() {
     /*创建循环*/
-    _timer = new Timer.periodic(new Duration(seconds: 10), (timer) {
+    _timer = new Timer.periodic(new Duration(seconds: 5), (timer) {
       setState(() {
         this._getData();
       });
