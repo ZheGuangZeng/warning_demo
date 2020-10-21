@@ -3,6 +3,7 @@ import 'dart:isolate';
 
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_plugin/flutter_foreground_plugin.dart';
 import 'package:foreground_service/foreground_service.dart';
 import 'package:waring_demo/models/home_model.dart';
 import 'package:waring_demo/network/http_request.dart';
@@ -77,6 +78,29 @@ void _startTimer() {
 void main() {
   runApp(MyApp());
   // maybeStartFGS();
+  startForegroundService();
+}
+
+void startForegroundService() async {
+  await FlutterForegroundPlugin.setServiceMethodInterval(seconds: 5);
+  await FlutterForegroundPlugin.setServiceMethod(globalForegroundService);
+  await FlutterForegroundPlugin.startForegroundService(
+    holdWakeLock: false,
+    onStarted: () {
+      print("Foreground on Started");
+    },
+    onStopped: () {
+      print("Foreground on Stopped");
+    },
+    title: "Flutter Foreground Service",
+    content: "This is Content",
+    iconName: "ic_stat_hot_tub",
+  );
+}
+
+void globalForegroundService() {
+  debugPrint("current datetime is ${DateTime.now()}");
+  _getDataForAlarm();
 }
 
 void maybeStartFGS() async {
@@ -130,17 +154,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: '馨安家园',
-          theme: ThemeData(
-            primaryColor: Colors.black,
-            brightness: Brightness.dark,
-          ),
-          home: MyStatckpage()),
-      onWillPop: () async => false,
-    );
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: '馨安家园',
+        theme: ThemeData(
+          primaryColor: Colors.black,
+          brightness: Brightness.dark,
+        ),
+        home: MyStatckpage());
   }
 }
 
@@ -166,27 +187,33 @@ class _MyStatckpageState extends State<MyStatckpage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView(
-        controller: _controller,
-        children: <Widget>[Home(), History()],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.black,
-        selectedFontSize: 18,
-        selectedItemColor: Color.fromRGBO(0, 204, 187, 1),
-        currentIndex: _currentIndex,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('首页')),
-          BottomNavigationBarItem(icon: Icon(Icons.history), title: Text('记录'))
-        ],
-        onTap: (index) {
-          _controller.jumpToPage(index);
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+    return WillPopScope(
+      onWillPop: () async {
+        return Future.value(false);
+      },
+      child: Scaffold(
+        body: PageView(
+          controller: _controller,
+          children: <Widget>[Home(), History()],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.black,
+          selectedFontSize: 18,
+          selectedItemColor: Color.fromRGBO(0, 204, 187, 1),
+          currentIndex: _currentIndex,
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('首页')),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.history), title: Text('记录'))
+          ],
+          onTap: (index) {
+            _controller.jumpToPage(index);
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
       ),
     );
   }

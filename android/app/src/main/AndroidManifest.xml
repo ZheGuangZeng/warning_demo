@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.waring_demo">
+    package="com.example.waring_demo"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
          In most cases you can leave this as-is, but you if you want to provide
@@ -12,10 +13,15 @@
          <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
          <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
+        <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
+        android:usesCleartextTraffic="true"
         android:name="io.flutter.app.FlutterApplication"
         android:label="紧急呼叫"
         android:icon="@mipmap/ic_launcher">
+
+
         <service    
             android:name="io.flutter.plugins.androidalarmmanager.AlarmService"
             android:permission="android.permission.BIND_JOB_SERVICE"
@@ -47,5 +53,13 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <service android:name="changjoopark.com.flutter_foreground_plugin.FlutterForegroundService"/>
+
     </application>
+
+    <uses-sdk
+        android:minSdkVersion="23"
+        tools:overrideLibrary="changjoopark.com.flutter_foreground_plugin" />
+
 </manifest>
