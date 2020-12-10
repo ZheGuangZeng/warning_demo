@@ -24,8 +24,8 @@ void printHello() {
 //获得首页的数据
 void _getDataForAlarm() {
   HttpRequest.request(APP_STATUS == 1
-          ? 'http://47.97.251.68:3000/call/adminActiveCall'
-          : 'http://47.97.251.68:3000/call/activeCall')
+          ? 'http://106.14.248.81:3000/call/adminActiveCall'
+          : 'http://106.14.248.81:3000/call/activeCall')
       .then((res) {
     // _playaudio();
 
@@ -222,7 +222,7 @@ class _HomeBodyState extends State<HomeBody> {
                         //       borderRadius: BorderRadius.circular(5)),
                         //   onPressed: () {
                         //     HttpRequest.request(
-                        //             'http://47.97.251.68:3000/call/inActiveCall/' +
+                        //             'http://106.14.248.81:3000/call/inActiveCall/' +
                         //                 id,
                         //             method: 'post')
                         //         .then((res) {
@@ -256,8 +256,8 @@ class _HomeBodyState extends State<HomeBody> {
   //获得首页的数据
   void _getData() {
     HttpRequest.request(APP_STATUS == 1
-            ? 'http://47.97.251.68:3000/call/adminActiveCall'
-            : 'http://47.97.251.68:3000/call/activeCall')
+            ? 'http://106.14.248.81:3000/call/adminActiveCall'
+            : 'http://106.14.248.81:3000/call/activeCall')
         .then((res) {
       print(res.data);
       List<HomeModel> users = [];

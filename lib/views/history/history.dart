@@ -33,7 +33,7 @@ class _HistoryBodyState extends State<HistoryBody> {
   @override
   void initState() {
     super.initState();
-    HttpRequest.request('http://47.97.251.68:3000/call/inActiveCall')
+    HttpRequest.request('http://106.14.248.81:3000/call/inActiveCall')
         .then((res) {
       print(res.data);
       List<HistoryModel> users = [];

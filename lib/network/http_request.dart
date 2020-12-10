@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 class HttpRequest {
   //创建一个dio
   static BaseOptions baseOptions =
-      BaseOptions(baseUrl: 'http://47.97.251.68:3000', connectTimeout: 5000);
+      BaseOptions(baseUrl: 'http://106.14.248.81:3000', connectTimeout: 5000);
   static final dio = Dio(baseOptions);
   static Future request(String url,
       {String method = 'get', Map<String, dynamic> params}) async {

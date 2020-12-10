@@ -4,6 +4,7 @@ import 'dart:isolate';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_plugin/flutter_foreground_plugin.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foreground_service/foreground_service.dart';
 import 'package:waring_demo/models/home_model.dart';
 import 'package:waring_demo/network/http_request.dart';
@@ -17,8 +18,8 @@ void _getDataForAlarm() {
   print('_getDataForAlarm from frogroudservice: ' + DateTime.now().toString());
 
   HttpRequest.request(APP_STATUS == 1
-          ? 'http://47.97.251.68:3000/call/adminActiveCall'
-          : 'http://47.97.251.68:3000/call/activeCall')
+          ? 'http://106.14.248.81:3000/call/adminActiveCall'
+          : 'http://106.14.248.81:3000/call/activeCall')
       .then((res) {
     print(res.data);
     List<HomeModel> users = [];
@@ -99,6 +100,15 @@ void startForegroundService() async {
 }
 
 void globalForegroundService() {
+  Fluttertoast.showToast(
+      msg:
+          '_getDataForAlarm from frogroudservice: ' + DateTime.now().toString(),
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0);
   debugPrint("current datetime is ${DateTime.now()}");
   _getDataForAlarm();
 }
